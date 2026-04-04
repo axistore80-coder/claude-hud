@@ -170,7 +170,7 @@ function processEntry(entry, toolMap, agentMap, taskIdToIndex, latestTodos, resu
                 status: 'running',
                 startTime: timestamp,
             };
-            if (block.name === 'Task') {
+            if (block.name === 'Task' || block.name === 'Agent') {
                 const input = block.input;
                 const agentEntry = {
                     id: block.id,
