@@ -158,6 +158,22 @@ test('renderSessionLine suppresses token breakdown below raised contextCriticalT
   assert.ok(!line.includes('in:'), 'expected no token breakdown at 90% when critical threshold is 95');
 });
 
+test('renderSessionLine token display uses autoCompactWindow as denominator when set', () => {
+  const ctx = baseContext();
+  ctx.config = mergeConfig({
+    lineLayout: 'compact',
+    display: { contextValue: 'both', autoCompactWindow: 200000, showTokenBreakdown: false },
+  });
+  // 70.6k tokens against a 1M model window, but auto-compact window is 200k.
+  ctx.stdin.context_window.context_window_size = 1000000;
+  ctx.stdin.context_window.current_usage.input_tokens = 70600;
+  const line = stripAnsi(renderSessionLine(ctx));
+  // Should match /context: 35% (71k/200k), not 7% (71k/1.0M).
+  assert.ok(line.includes('35%'), `expected 35% in: ${line}`);
+  assert.ok(line.includes('/200k'), `expected /200k denominator in: ${line}`);
+  assert.ok(!line.includes('/1.0M'), `expected full window not shown in: ${line}`);
+});
+
 test('renderIdentityLine token breakdown honours contextCriticalThreshold', () => {
   const ctx = baseContext();
   ctx.config.display.contextCriticalThreshold = 50;

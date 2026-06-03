@@ -337,7 +337,14 @@ function formatTokens(n: number): string {
 
 function formatContextValue(ctx: RenderContext, percent: number, mode: 'percent' | 'tokens' | 'remaining' | 'both'): string {
   const totalTokens = getTotalTokens(ctx.stdin);
-  const size = ctx.stdin.context_window?.context_window_size ?? 0;
+  const autoCompactWindow = ctx.config?.display?.autoCompactWindow ?? null;
+  // When an explicit auto-compact window is configured, use it as the token
+  // denominator so the tokens/both displays match the percentage (and /context),
+  // rather than the full model context window.
+  const size =
+    typeof autoCompactWindow === 'number' && autoCompactWindow > 0
+      ? autoCompactWindow
+      : ctx.stdin.context_window?.context_window_size ?? 0;
 
   if (mode === 'tokens') {
     if (size > 0) {
