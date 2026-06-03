@@ -16,8 +16,9 @@ export function renderIdentityLine(
   ctx: RenderContext,
   alignLabels = false,
 ): string {
-  const rawPercent = getContextPercent(ctx.stdin);
-  const bufferedPercent = getBufferedPercent(ctx.stdin);
+  const autoCompactWindow = ctx.config?.display?.autoCompactWindow ?? null;
+  const rawPercent = getContextPercent(ctx.stdin, autoCompactWindow);
+  const bufferedPercent = getBufferedPercent(ctx.stdin, autoCompactWindow);
   const autocompactMode = ctx.config?.display?.autocompactBuffer ?? "enabled";
   const percent = autocompactMode === "disabled" ? rawPercent : bufferedPercent;
   const colors = ctx.config?.colors;

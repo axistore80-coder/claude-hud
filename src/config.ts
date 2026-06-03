@@ -137,6 +137,7 @@ export interface HudConfig {
     customLine: string;
     customLinePosition: CustomLinePosition;
     timeFormat: TimeFormatMode;
+    autoCompactWindow: number | null;
   };
   colors: HudColorOverrides;
 }
@@ -205,6 +206,7 @@ export const DEFAULT_CONFIG: HudConfig = {
     customLine: '',
     customLinePosition: 'last',
     timeFormat: 'relative',
+    autoCompactWindow: null,
   },
   colors: {
     context: 'green',
@@ -441,6 +443,13 @@ function validateNonNegativeInteger(value: unknown, fallback: number): number {
   return value;
 }
 
+function validateAutoCompactWindow(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+    return null;
+  }
+  return Math.floor(value);
+}
+
 function validateOptionalPath(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }
@@ -630,6 +639,7 @@ export function mergeConfig(userConfig: Partial<HudConfig>): HudConfig {
     timeFormat: validateTimeFormat(migrated.display?.timeFormat)
       ? migrated.display.timeFormat
       : DEFAULT_CONFIG.display.timeFormat,
+    autoCompactWindow: validateAutoCompactWindow(migrated.display?.autoCompactWindow),
   };
 
   const colors = {

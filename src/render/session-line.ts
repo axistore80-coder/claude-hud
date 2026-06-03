@@ -20,8 +20,9 @@ const DEBUG = process.env.DEBUG?.includes('claude-hud') || process.env.DEBUG ===
 export function renderSessionLine(ctx: RenderContext): string {
   const model = formatModelName(getModelName(ctx.stdin), ctx.config?.display?.modelFormat, ctx.config?.display?.modelOverride);
 
-  const rawPercent = getContextPercent(ctx.stdin);
-  const bufferedPercent = getBufferedPercent(ctx.stdin);
+  const autoCompactWindow = ctx.config?.display?.autoCompactWindow ?? null;
+  const rawPercent = getContextPercent(ctx.stdin, autoCompactWindow);
+  const bufferedPercent = getBufferedPercent(ctx.stdin, autoCompactWindow);
   const autocompactMode = ctx.config?.display?.autocompactBuffer ?? 'enabled';
   const percent = autocompactMode === 'disabled' ? rawPercent : bufferedPercent;
 
